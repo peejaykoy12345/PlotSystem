@@ -396,6 +396,8 @@ function Plot:PlacePlant(plantName: string, plant_cframe: CFrame, growth: number
 end
 
 -- We added this as the PlacePlantHandler when the remote triggers
+-- Server will check what plot the player owns and uses this method on the plot that the player owns
+-- This is why self.OnClaim bindable is important
 -- This is different from PlacePlant because PlacePlant won't check for anything.
 function Plot:TryPlacePlant(plr: Player, plantName: string, pos: Vector3)
 	if not self:CanPlacePlant(plr, pos) then 
@@ -448,6 +450,8 @@ function Plot:DestroyPlant(plant)
 end
 
 -- This is for destroy plant remote handling because it checks if the player is even allowed to do this
+-- Server will check what plot the player owns and uses this method on the plot that the player owns
+-- This is why self.OnClaim bindable is important
 function Plot:TryDestroyPlant(plr, plant)
 	if not self:CanDestroyPlant(plr, plant) then 
 		return 
