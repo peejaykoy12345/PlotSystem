@@ -25,11 +25,6 @@ function UI:Init()
                 frame.Quantity.Text = qty
             else
                 frame = ItemTemplate:Clone()
-                print("Cloned:", frame)
-                print("Children:")
-                for _, child in ipairs(frame:GetChildren()) do
-                    print("-", child.Name, child.ClassName)
-                end
                 frame.Name = itemName
                 frame.ItemName.Text = itemName
                 frame.Quantity.Text = qty
