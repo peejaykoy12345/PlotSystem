@@ -10,6 +10,7 @@ local InventoryScreenGUI = plr.PlayerGui:WaitForChild("GUI"):WaitForChild("Inven
 local MainFrame = InventoryScreenGUI.Frame
 local ItemContainer = MainFrame.ScrollingFrame
 local ItemTemplate = ItemContainer.Template
+local CloseButton = MainFrame.Frame.CloseButton
 
 local UI = {}
 
@@ -47,6 +48,10 @@ function UI:Init()
         if input.KeyCode == Enum.KeyCode.E then
             MainFrame.Visible = not MainFrame.Visible
         end
+    end)
+
+    CloseButton.Activated:Connect(function()
+        MainFrame.Visible = false
     end)
 end
 

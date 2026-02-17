@@ -24,8 +24,8 @@ type GrowFuncParams = {
 }
 
 return {
-    ["Brick"] = {
-        Model = PlantModelsFolder.Brick,
+    ["Bamboo"] = {
+        Model = PlantModelsFolder.Bamboo,
         GrowthRate = 1,
         MaxGrowth = 20,
         Harvest = 1,
@@ -33,23 +33,27 @@ return {
         GrowFunc = function(params: GrowFuncParams)
             local plant = params.Plant
             print(plant.Model:GetFullName(), " ", plant.MaxGrowth, " ", plant.Growth)
-            local brick: BasePart = plant.Model.Brick
+
+            local brick: BasePart = plant.Model.Bamboo
             
             local growthAmount: number = plant.GrowthRate * plant.Plot.tier
-            
             local currentSize: Vector3 = brick.Size
-            
+
+            local remainingGrowth = plant.MaxGrowth - plant.Growth
+
+            local finalGrowthAmount = math.min(growthAmount, remainingGrowth)
+
             brick.Size = Vector3.new(
                 currentSize.X,
-                currentSize.Y + growthAmount,
+                currentSize.Y + finalGrowthAmount,
                 currentSize.Z
             )
 
-            plant.Growth += growthAmount
+            plant.Growth += finalGrowthAmount
         end,
         LoadGrowthFunc = function(params: GrowFuncParams)
             local plant = params.Plant
-            local brick: BasePart = plant.Model.Brick
+            local brick: BasePart = plant.Model.Bamboo
             
             local growthAmount: number = plant.Growth * plant.Plot.tier
             
@@ -70,8 +74,8 @@ return {
                 NotifEvent:FireClient(owner, "You can't harvest this plant. It hasn't fully growned yet!")
                 return 
             end
-            plot:DestroyPlant(plant)
-            Inventory:Add(owner, "Brick", 1)
+            plot:DestroyPlant(plant.Model)
+            Inventory:Add(owner, "Bamboo", 1)
         end
     }
 }

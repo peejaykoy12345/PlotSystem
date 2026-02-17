@@ -1,5 +1,5 @@
 local ItemData = {
-    ["Brick"] = {
+    ["Bamboo"] = {
         SellPrice = 100,
     }
 }
