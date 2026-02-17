@@ -17,4 +17,6 @@ SellEvent.OnServerEvent:Connect(function(plr: Player, itemName: string, qty: num
 
     Inventory:Remove(plr, itemName, qty)
     UpdateInventoryEvent:FireClient(plr, Inventory:GetPlayerItems(plr))
+
+    Economy:AddPlayerMoney(plr, price)
 end)
