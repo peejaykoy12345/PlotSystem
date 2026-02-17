@@ -37,6 +37,18 @@ function Plants.new(data: PlantData)
 
     self.GrowFunc = data.GrowFunc
     self.LoadGrowthFunc = data.LoadGrowthFunc
+    self.onHarvest = data.onHarvest
+
+    local Prompt = Instance.new("ProximityPrompt")
+    Prompt.Parent = self.PrimaryPart
+
+    Prompt.Triggered:Connect(function()
+        if self.onHarvest then
+            self.onHarvest({ Plant = self })
+        else
+            warn(`No onHarvest method for plant: {self.Name}`)
+        end
+    end)
 
     return self
 end

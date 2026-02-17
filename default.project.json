@@ -9,6 +9,9 @@
       },
       "Packages": {
         "$path": "Packages"
+      },
+      "UI": {
+        "$path": "src/UI"
       }
     },
 
@@ -21,6 +24,9 @@
       },
       "Classes": {
         "$path": "src/classes"
+      },
+      "Module Scripts": {
+        "$path": "src/server_modulescripts"
       }
     },
 

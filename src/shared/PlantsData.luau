@@ -1,6 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local Inventory = require(ServerScriptService["Module Scripts"].Inventory)
+
 local PlantModelsFolder = ReplicatedStorage.PlantModels
 
 type PlantData = {
@@ -10,7 +12,8 @@ type PlantData = {
     Harvest: number,
     Offset: CFrame,
     GrowFunc: (any) -> ()?,
-    LoadGrowthFunc: (any) -> ()?
+    LoadGrowthFunc: (any) -> ()?,
+    onHarvest: (any) -> ()?,
 }
 
 type GrowFuncParams = {
@@ -54,6 +57,14 @@ return {
                 currentSize.Y + growthAmount,
                 currentSize.Z
             )
+        end,
+        onHarvest = function(params)
+            local plant = params.Plant
+            if plant.Growth < plant.MaxGrowth then return end
+
+            plant:Destroy()
+
+            Inventory:Add(plant.Plot.owner, "Brick", 1)
         end
     }
 }
