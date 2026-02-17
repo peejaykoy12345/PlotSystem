@@ -13,7 +13,8 @@ SellEvent.OnServerEvent:Connect(function(plr: Player, itemName: string, qty: num
     if Inventory:GetItemCount(plr, itemName) < qty then return end
 
     local price = Economy:CalculatePrice(itemName, qty)
-    price("Price is $" .. tostring(price) .. " for selling " .. itemName .. " for " .. tostring(qty) .. " amount")
+
+    print("Price is $" .. tostring(price) .. " for selling " .. itemName .. " for " .. tostring(qty) .. " amount")
 
     Inventory:Remove(plr, itemName, qty)
     UpdateInventoryEvent:FireClient(plr, Inventory:GetPlayerItems(plr))

@@ -6,6 +6,8 @@ realm = "shared"
 
 [dependencies]
 remotes = "chipioindustries/remotes@2.0.0"
+simpledialogue = "crabzzai/simpledialogue@0.2.1"
+Fusion = "elttob/fusion@0.2.0"
 
 [server-dependencies]
 profilestore = "lm-loleris/profilestore@1.0.3"

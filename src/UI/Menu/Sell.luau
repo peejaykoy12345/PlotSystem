@@ -11,6 +11,8 @@ local MainFrame = SellScreenGUI.Frame
 local ItemContainer = MainFrame.ScrollingFrame
 local ItemTemplate = ItemContainer.Template
 
+local CloseButton = MainFrame.Frame.CloseButton
+
 local UI = {}
 
 function UI:Init()
@@ -41,9 +43,9 @@ function UI:Init()
                     end
                 end)
 
-                local sellButton: TextButton = frame.sellButton
+                local sellButton: TextButton = frame.SellButton
                 sellButton.Activated:Connect(function()
-                    local qty = tonumber(QuantityTextbox.Text) or 0
+                    local qty = tonumber(QuantityTextbox.Text) or 1
                     if qty <= 0 then return end
 
                     SellEvent:FireServer(itemName, qty)
@@ -58,6 +60,10 @@ function UI:Init()
                 frame:Destroy()
             end
         end
+    end)
+
+    CloseButton.Activated:Connect(function()
+        MainFrame.Visible = false
     end)
 end
 

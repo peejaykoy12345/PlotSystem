@@ -15,7 +15,9 @@ local UI = {}
 
 function UI:Init()
     UpdateInventoryEvent.OnClientEvent:Connect(function(items: {[string]: number})
-        print("Ran")
+        local seen = {}  -- track items we processed
+
+        -- Update or add items
         for itemName, qty in pairs(items) do
             local frame = ItemContainer:FindFirstChild(itemName)
             if frame then
@@ -27,7 +29,15 @@ function UI:Init()
                 frame.Quantity.Text = qty
                 frame.Visible = true
                 frame.Parent = ItemContainer
-            end 
+            end
+            seen[itemName] = true
+        end
+
+        -- Remove items that are not in the new inventory
+        for _, frame in pairs(ItemContainer:GetChildren()) do
+            if frame:IsA("Frame") and not seen[frame.Name] then
+                frame:Destroy()
+            end
         end
     end)
 
