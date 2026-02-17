@@ -66,16 +66,19 @@ function Plot.new(params)
 	-- If triggered the server handler will unference the plot owner
 	self.OnUnclaim = Instance.new("BindableEvent")
 
-	self:ConnectClaimClickDetector() -- Connect the clickdetector event
+	self:ConnectProximityPrompt() -- Connect the clickdetector event
 
 	return self
 end
 
-function Plot:ConnectClaimClickDetector()
+function Plot:ConnectProximityPrompt()
 	local plot = self.plot
-	local ClickDetector: ClickDetector = plot.Sign.Leg.Claim
+	local ProximityPrompt = Instance.new("ProximityPrompt")
+	ProximityPrompt.ActionText = "Claim Plot"
+	ProximityPrompt.RequiresLineOfSight = false
+	ProximityPrompt.Parent = plot.Sign.Part
 
-	ClickDetector.MouseClick:Connect(function(player)
+	ProximityPrompt.Triggered:Connect(function(player)
 		self:TryClaimPlot(player) -- Will check if the player is able to claim first
 	end)
 end

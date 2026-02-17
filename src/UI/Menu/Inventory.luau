@@ -45,7 +45,7 @@ function UI:Init()
     UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         if gameProcessedEvent then return end
 
-        if input.KeyCode == Enum.KeyCode.E then
+        if input.KeyCode == Enum.KeyCode.G then
             MainFrame.Visible = not MainFrame.Visible
         end
     end)

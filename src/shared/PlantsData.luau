@@ -74,6 +74,7 @@ return {
                 NotifEvent:FireClient(owner, "You can't harvest this plant. It hasn't fully growned yet!")
                 return 
             end
+
             plot:DestroyPlant(plant.Model)
             Inventory:Add(owner, "Bamboo", 1)
         end
