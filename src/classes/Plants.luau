@@ -1,3 +1,4 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Plants = {}
@@ -40,6 +41,7 @@ function Plants.new(data: PlantData)
     self.onHarvest = data.onHarvest
 
     local Prompt = Instance.new("ProximityPrompt")
+    Prompt.ActionText = "Harvest"
     Prompt.Parent = self.PrimaryPart
 
     Prompt.Triggered:Connect(function()
