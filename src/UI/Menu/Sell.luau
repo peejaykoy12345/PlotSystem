@@ -56,7 +56,7 @@ function UI:Init()
 
         -- Remove items that are not in the new inventory
         for _, frame in pairs(ItemContainer:GetChildren()) do
-            if frame:IsA("Frame") and not seen[frame.Name] then
+            if frame.Name ~= "Template" and frame:IsA("Frame") and not seen[frame.Name] then
                 frame:Destroy()
             end
         end

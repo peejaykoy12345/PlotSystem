@@ -41,6 +41,7 @@ function Plants.new(data: PlantData)
     self.onHarvest = data.onHarvest
 
     local Prompt = Instance.new("ProximityPrompt")
+    Prompt.RequiresLineOfSight = false
     Prompt.ActionText = "Harvest"
     Prompt.Parent = self.PrimaryPart
 
