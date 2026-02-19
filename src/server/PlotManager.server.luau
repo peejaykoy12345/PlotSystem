@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
 local Packages = ReplicatedStorage.Packages
 
 local remotes = require(Packages.remotes)
@@ -9,6 +10,9 @@ local PlotClass = require(Classes.Plot)
 
 local PlantEvent: RemoteEvent = remotes:getEventAsync("Plant")
 local DestroyPlantEvent: RemoteEvent = remotes:getEventAsync("DestroyPlant")
+
+local PlantBindable = Instance.new("BindableEvent", ServerStorage)
+PlantBindable.Name = "PlantBindable"
 
 local PlotsFolder = workspace.FarmPlot
 
@@ -32,14 +36,17 @@ end
 
 require(Classes.Plot.PlotProfileStore):Init()
 
-PlantEvent.OnServerEvent:Connect(function(player, plantName, pos)
+local function handlePlant(player, plantName, pos)
     local plot = PlayerPlots[player]
     if not plot then 
         return 
     end
     
     plot:TryPlacePlant(player, plantName, pos)
-end)
+end
+
+PlantBindable.Event:Connect(handlePlant)
+PlantEvent.OnServerEvent:Connect(handlePlant)
 
 DestroyPlantEvent.OnServerEvent:Connect(function(player, plant)
     local plot = PlayerPlots[player]
