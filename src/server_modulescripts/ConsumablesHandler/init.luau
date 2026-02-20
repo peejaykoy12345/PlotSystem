@@ -74,9 +74,9 @@ function ConsumablesHandler:GivePlayerConsumable(plr: Player, toolName: string, 
         }
         local consumable = ConsumableClass.new(ConsumableParams)
         plrTable[toolName] = consumable
-    end
 
-    ConsumableAddedEvent:FireClient(plr, plrTable[toolName])
+        ConsumableAddedEvent:FireClient(plr, plrTable[toolName])
+    end
 end
 
 function ConsumablesHandler:GetPlayerSaveData(plr :Player)

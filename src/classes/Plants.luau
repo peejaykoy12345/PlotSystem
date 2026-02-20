@@ -1,6 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local Inventory = require(ServerScriptService["Module Scripts"].Inventory)
+
+local remotes = require(ReplicatedStorage.Packages.remotes)
+local NotifEvent: RemoteEvent = remotes:getEventAsync("Notification")
+
 local Plants = {}
 Plants.__index = Plants
 
@@ -15,6 +20,7 @@ export type PlantData = {
     PlantCFrame: CFrame,
     Offset: CFrame,
     Growth: number?,
+    nearbyRange: number,
     GrowFunc: (any) -> ()?,
     LoadGrowthFunc: (any) -> ()?
 }
@@ -28,6 +34,7 @@ function Plants.new(data: PlantData)
     self.GrowthRate = data.GrowthRate
     self.MaxGrowth = data.MaxGrowth
     self.Harvest = data.Harvest
+    self.NearbyRange = data.nearbyRange
 
     self.PrimaryPart = self.Model.PrimaryPart
 
@@ -35,6 +42,7 @@ function Plants.new(data: PlantData)
     
     self.Model:PivotTo(data.PlantCFrame * data.Offset)
     self.Model.Parent = self.Plot.plot.Plants
+    self.Model:SetAttribute("PlantModel", true)
 
     self.GrowFunc = data.GrowFunc
     self.LoadGrowthFunc = data.LoadGrowthFunc
@@ -46,11 +54,17 @@ function Plants.new(data: PlantData)
     Prompt.Parent = self.PrimaryPart
 
     Prompt.Triggered:Connect(function()
-        if self.onHarvest then
-            self.onHarvest({ Plant = self })
-        else
-            warn(`No onHarvest method for plant: {self.Name}`)
+        local plant = self
+        local plot = plant.Plot
+        local owner = plot.owner
+
+        if plant.Growth < plant.MaxGrowth then 
+            NotifEvent:FireClient(owner, "You can't harvest this plant. It hasn't fully growned yet!")
+            return 
         end
+
+        plot:DestroyPlant(plant.Model)
+        Inventory:Add(owner, plant.Name, 1)
     end)
 
     return self

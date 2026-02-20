@@ -25,6 +25,10 @@ local PlantsData = require(SharedFolder.PlantsData)
 -- and makes it so that other scripts can use these utils
 local TableUtils = require(SharedFolder.TableUtils)
 
+-- This is for shared utilities such as are plants nearby
+-- The client also needs to check if plants are nearby for visual feedback
+local PlotUtils = require(SharedFolder.PlotUtils)
+
 -- If the event doesn't exist yet remotes module creates it but only if it's ran on the server
 -- Client event for sending notifications
 local NotifEvent: RemoteEvent = remotes:getEventAsync("Notification")
@@ -335,9 +339,15 @@ function Plot:IsInside(part: BasePart, pos: Vector3)
 	return insideX and insideZ -- Return the result (True if inside and false if not)
 end
 
-function Plot:CanPlacePlant(plr:Player, pos: Vector3): boolean
+function Plot:CanPlacePlant(plr:Player, plantName: string, pos: Vector3): boolean
 	-- If there's no owner yet then no one should place plants
 	if not self.owner then return false end
+
+	local plantData = PlantsData[plantName]
+	if not plantData then 
+		warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
+		return
+	end
 
 	-- It's impossible to trigger this without exploiting
 	-- The client fires the remote to the server
@@ -363,6 +373,15 @@ function Plot:CanPlacePlant(plr:Player, pos: Vector3): boolean
 	else
 		-- If planted somewhere else then notify them
 		NotifEvent:FireClient(self.owner, "Can't place plants because it needs to be planted on the soil of your plot")
+		return false
+	end
+
+	-- nearbyRange is the radius of the space that the plant will take
+	-- We name it scan range because in the utils it's the thing checking
+	local scanRange = plantData.nearbyRange
+	if PlotUtils:ArePlantsNearby(self.plants, pos, scanRange) then
+		-- We don't notify the user because the client already does checking before firing the remote
+		-- but if an exploiter fires it anyway they won't get past
 		return false
 	end
 end
@@ -403,7 +422,7 @@ end
 -- This is why self.OnClaim bindable is important
 -- This is different from PlacePlant because PlacePlant won't check for anything.
 function Plot:TryPlacePlant(plr: Player, plantName: string, pos: Vector3)
-	if not self:CanPlacePlant(plr, pos) then 
+	if not self:CanPlacePlant(plr, plantName, pos) then 
 		return 
 	end
 

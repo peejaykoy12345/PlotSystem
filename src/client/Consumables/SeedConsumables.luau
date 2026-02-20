@@ -1,0 +1,108 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local remotes = require(ReplicatedStorage.Packages.remotes)
+local GetPlotFunction: RemoteFunction = remotes:getFunctionAsync("GetPlot")
+
+local PlantModels = ReplicatedStorage.PlantModels
+
+local PlantsData = require(ReplicatedStorage.Shared.PlantsData)
+local PlotUtils = require(ReplicatedStorage.Shared.PlotUtils)
+
+local plr = Players.LocalPlayer
+local camera: Camera = workspace.CurrentCamera
+
+local SeedConsumables = {}
+
+local function setModelTransparency(model: Model, transparency: number)
+    for _, part in pairs(model:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.Transparency = transparency
+        end
+    end
+end
+
+function SeedConsumables:CanPlacePlant(plantName: string) : boolean
+    if not self.previewModel or not self.mousePos then return end
+
+    local plantData = PlantsData[plantName]
+	if not plantData then 
+		warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
+		return false
+	end
+
+    local plot = GetPlotFunction:InvokeServer()
+    if not plot then return false end
+
+    local plants = plot.Plants
+
+    local scanRange = plantData.nearbyRange
+	if PlotUtils:ArePlantsNearby(plants, self.mousePos, scanRange) then
+		-- We don't notify the user because the client already does checking before firing the remote
+		-- but if an exploiter fires it anyway they won't get past
+		return false
+	end
+
+    return true
+end
+
+function SeedConsumables:OnEquip(plantName: string)
+    local plantData = PlantsData[plantName]
+	if not plantData then 
+		warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
+		return false
+	end
+
+	local modelTemplate: Model? = PlantModels:FindFirstChild(plantName)
+	if not modelTemplate then 
+		warn(`Model template for {plantName} not found`)
+		return 
+	end
+
+	local model: Model = modelTemplate:Clone()
+	setModelTransparency(model, 0.4)
+	model.Parent = workspace
+
+    self.previewModel = model
+
+    local Y_OFFSET = plantData.Offset
+
+	self.connection = RunService.Heartbeat:Connect(function()
+        local mousePos: Vector2 = UserInputService:GetMouseLocation()
+        local ray: Ray = camera:ViewportPointToRay(mousePos.X, mousePos.Y)
+
+        local rayParams = RaycastParams.new()
+        rayParams.FilterType = Enum.RaycastFilterType.Exclude
+        rayParams.FilterDescendantsInstances = {
+            model,
+            plr.Character
+        }
+
+        local result = workspace:Raycast(ray.Origin, ray.Direction * 500, rayParams)
+        if not result then return end
+
+        print(Y_OFFSET , " is offset")
+
+        self.mousePos = (CFrame.new(result.Position) * Y_OFFSET).Position
+        --self.mousePos = self.mousePos.Position
+
+        print(self.mousePos, "|", result.Position)
+        
+        model:PivotTo(CFrame.new(self.mousePos))
+    end)
+end
+
+function SeedConsumables:OnUnequip()
+    print(self.previewModel, " and ", self.connection)
+    if self.previewModel then
+        self.previewModel:Destroy()
+    end
+
+    if self.connection then
+        self.connection:Disconnect()
+    end
+end
+
+return SeedConsumables

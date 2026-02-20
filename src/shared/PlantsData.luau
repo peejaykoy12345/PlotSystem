@@ -1,19 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
-
-local remotes = require(ReplicatedStorage.Packages.remotes)
-local NotifEvent: RemoteEvent = remotes:getEventAsync("Notification")
-
-local Inventory = require(ServerScriptService["Module Scripts"].Inventory)
 
 local PlantModelsFolder = ReplicatedStorage.PlantModels
 
-type PlantData = {
+export type PlantData = {
     Model: Model,
     GrowthRate: number,
     MaxGrowth: number,
     Harvest: number,
     Offset: CFrame,
+    nearbyRange: number,
     GrowFunc: (any) -> ()?,
     LoadGrowthFunc: (any) -> ()?,
     onHarvest: (any) -> ()?,
@@ -29,7 +24,8 @@ return {
         GrowthRate = 1,
         MaxGrowth = 20,
         Harvest = 1,
-        Offset = CFrame.new(0, 0, 0),
+        Offset = CFrame.new(0, 1, 0),
+        nearbyRange = 3,
         GrowFunc = function(params: GrowFuncParams)
             local plant = params.Plant
             print(plant.Model:GetFullName(), " ", plant.MaxGrowth, " ", plant.Growth)
@@ -65,18 +61,5 @@ return {
                 currentSize.Z
             )
         end,
-        onHarvest = function(params)
-            local plant = params.Plant
-            local plot = plant.Plot
-            local owner = plot.owner
-
-            if plant.Growth < plant.MaxGrowth then 
-                NotifEvent:FireClient(owner, "You can't harvest this plant. It hasn't fully growned yet!")
-                return 
-            end
-
-            plot:DestroyPlant(plant.Model)
-            Inventory:Add(owner, "Bamboo", 1)
-        end
     }
 }

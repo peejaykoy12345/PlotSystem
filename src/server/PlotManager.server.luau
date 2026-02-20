@@ -4,6 +4,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local Packages = ReplicatedStorage.Packages
 
 local remotes = require(Packages.remotes)
+local GetPlotFunction: RemoteFunction = remotes:getFunctionAsync("GetPlot")
 
 local Classes = ServerScriptService.Classes
 local PlotClass = require(Classes.Plot)
@@ -56,3 +57,18 @@ DestroyPlantEvent.OnServerEvent:Connect(function(player, plant)
     
     plot:TryDestroyPlant(player, plant)
 end)
+
+GetPlotFunction.OnServerInvoke = function(plr)
+    local plotData = {
+        Plants = {}
+    }
+
+    for _, plant in ipairs(PlayerPlots[plr].plants) do
+        table.insert(plotData.Plants, {
+           Model = plant.Model, 
+           nearbyRange = plant.nearbyRange
+        })
+    end
+
+    return plotData
+end
