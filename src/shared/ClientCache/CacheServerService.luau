@@ -3,10 +3,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotes = require(ReplicatedStorage.Packages.remotes)
 local SendPlotCache: RemoteEvent = remotes:getEventAsync("SendPlot")
 
-local ServerController = {}
+local Service = {}
 
-function ServerController:OnNewCache(plr: Player, plotData)
-    SendPlotCache:FireClient(plr, plotData)
+function Service:NewCache(plr: Player, cacheName: string, data: any)
+    SendPlotCache:FireClient(plr, cacheName, data)
 end
 
-return ServerController
+return Service

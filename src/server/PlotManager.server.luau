@@ -15,8 +15,7 @@ local DestroyPlantEvent: RemoteEvent = remotes:getEventAsync("DestroyPlant")
 local PlantBindable = Instance.new("BindableEvent", ServerStorage)
 PlantBindable.Name = "PlantBindable"
 
-local SendCache = Instance.new("BindableEvent", ServerStorage)
-SendCache.Name = "SendCache"
+local CacheServerService = require(ReplicatedStorage.Shared.ClientCache.CacheServerService)
 
 local PlotsFolder = workspace.FarmPlot
 
@@ -52,10 +51,10 @@ for _, plotModel in pairs(PlotsFolder:GetChildren()) do
     plot.OnClaim.Event:Connect(function(plr)
         onChangedConnection = plot.OnChanged.Event:Connect(function()
             local plotData = getPlayerPlotData(plr)
-            SendCache:Fire(plr, plotData)
+            CacheServerService:NewCache(plr, "plotData", plotData)
         end)
         PlayerPlots[plr] = plot
-        SendCache:Fire(plr, getPlayerPlotData(plr))
+        CacheServerService:NewCache(plr, "plotData", getPlayerPlotData(plr))
     end)
 
     plot.OnUnclaim.Event:Connect(function(plr)

@@ -13,7 +13,7 @@ local PlotUtils = require(ReplicatedStorage.Shared.PlotUtils)
 
 local ConsumablesUtils = require(script.Parent.ConsumablesUtils)
 
-local PlotCacheClientService = require(ReplicatedStorage.Shared.PlotCache.PlotCacheClientService)
+local CacheClientService = require(ReplicatedStorage.Shared.ClientCache.CacheClientService)
 
 local plr = Players.LocalPlayer
 local mouse = plr:GetMouse()
@@ -91,7 +91,7 @@ function SeedConsumables:CanPlacePlant(plantName: string) : boolean
     local scanRange = getPlantScanRadius(plantName)
     if not scanRange then return false end
 
-    local plot = PlotCacheClientService:GetPlotData()
+    local plot = CacheClientService:GetCacheData("plotData")
     if not plot or not plot.Plot then return false end
 
     print(plot)
