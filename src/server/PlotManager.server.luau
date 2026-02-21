@@ -65,7 +65,7 @@ GetPlotFunction.OnServerInvoke = function(plr)
 
     for _, plant in ipairs(PlayerPlots[plr].plants) do
         table.insert(plotData.Plants, {
-           Model = plant.Model, 
+           CFrame = plant.CFrame, 
            nearbyRange = plant.nearbyRange
         })
     end
