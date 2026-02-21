@@ -140,6 +140,11 @@ function SeedConsumables:OnEquip(plantName: string)
         model:PivotTo(CFrame.new(self.mousePos))
 
         self.scan.Position = model:GetPivot().Position
+        if not self:CanPlacePlant(plantName) then
+            self.scan.Color = Color3.fromRGB(255, 0, 0)
+        else
+            self.scan.Color = Color3.fromRGB(0, 255, 0)
+        end
     end)
 end
 
