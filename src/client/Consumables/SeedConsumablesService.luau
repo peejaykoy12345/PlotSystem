@@ -54,6 +54,25 @@ local function getPlantScanRadius(plantName: string)
     return scanRange
 end
 
+local function IsOnGround(pos: Vector3, ignoreList: {Instance}?, rayLength: number?)
+    ignoreList = ignoreList or {}
+    rayLength = rayLength or 5
+
+    local rayOrigin = pos + Vector3.new(0, 5, 0)
+    local rayDirection = Vector3.new(0, -rayLength, 0)
+
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = ignoreList
+
+    local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+    if rayResult then
+        print(rayResult.Instance.Name, " ", rayResult.Instance.ClassName)
+    end
+    return rayResult ~= nil and rayResult.Instance.Name ~= "DialogueFloatingPart"
+end
+
 local equip_debounce = false
 local toolUseDebounce = false
 
@@ -88,18 +107,22 @@ end
 function SeedConsumables:CanPlacePlant(plantName: string) : boolean
     if not self.previewModel or not self.mousePos then return end
 
+    local plantData = PlantsData[plantName]
+    if not plantData then 
+        warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
+        return false
+    end
+
+    local Y_OFFSET = plantData.Offset.Position.Y
+
     local scanRange = getPlantScanRadius(plantName)
     if not scanRange then return false end
 
     local plot = CacheClientService:GetCacheData("plotData")
     if not plot or not plot.Plot then return false end
 
-    print(plot)
-
     local plow: BasePart = plot.Plot.Plow
 	local plow2: BasePart = plot.Plot.Plow2
-
-    print(plow, " ", plow2)
 
 	-- Check if the position of the click is inside one of the plows
 	if not (IsInside(plow, self.mousePos) or IsInside(plow2, self.mousePos)) then
@@ -110,6 +133,10 @@ function SeedConsumables:CanPlacePlant(plantName: string) : boolean
 	if PlotUtils:ArePlantsNearby(plants, self.mousePos, scanRange) then
 		return false
 	end
+
+    if not IsOnGround(self.mousePos, {plr.Character, self.previewModel, plot.Plot.PlantsFolder}, 6 + Y_OFFSET) then
+        return false
+    end
 
     return true
 end

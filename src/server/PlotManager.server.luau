@@ -28,12 +28,14 @@ local function getPlayerPlotData(plr)
         Plot = {
             Plow = PlayerPlots[plr].plot.Plow,
             Plow2 = PlayerPlots[plr].plot.Plow2,
+            PlantsFolder = PlayerPlots[plr].plantsFolder
         },
         Plants = {}
     }
 
     for _, plant in ipairs(PlayerPlots[plr].plants) do
         table.insert(plotData.Plants, {
+           Model = plant.Model, 
            CFrame = plant.CFrame, 
            nearbyRange = plant.nearbyRange
         })
