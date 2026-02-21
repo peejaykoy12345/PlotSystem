@@ -342,6 +342,25 @@ function Plot:IsInside(part: BasePart, pos: Vector3)
 	return insideX and insideZ -- Return the result (True if inside and false if not)
 end
 
+function Plot:IsOnGround(pos: Vector3, ignoreList: {Instance}?, rayLength: number?)
+    ignoreList = ignoreList or {}
+    rayLength = rayLength or 5
+
+    local rayOrigin = pos + Vector3.new(0, 5, 0)
+    local rayDirection = Vector3.new(0, -rayLength, 0)
+
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = ignoreList
+
+    local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+    if rayResult then
+        print(rayResult.Instance.Name, " ", rayResult.Instance.ClassName)
+    end
+    return rayResult ~= nil and rayResult.Instance.Name ~= "DialogueFloatingPart"
+end
+
 function Plot:CanPlacePlant(plr:Player, plantName: string, pos: Vector3): boolean
 	-- If there's no owner yet then no one should place plants
 	if not self.owner then return false end
@@ -351,6 +370,8 @@ function Plot:CanPlacePlant(plr:Player, plantName: string, pos: Vector3): boolea
 		warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
 		return
 	end
+
+	local Y_OFFSET = plantData.Offset.Position.Y
 
 	-- It's impossible to trigger this without exploiting
 	-- The client fires the remote to the server
@@ -370,14 +391,9 @@ function Plot:CanPlacePlant(plr:Player, plantName: string, pos: Vector3): boolea
 	local plow: BasePart = self.plot.Plow
 	local plow2: BasePart = self.plot.Plow2
 
-	-- Check if the position of the click is inside one of the plows
-	if self:IsInside(plow, pos) or self:IsInside(plow2, pos) then
-		return true
-	else
-		-- If planted somewhere else then notify them
-		NotifEvent:FireClient(self.owner, "Can't place plants because it needs to be planted on the soil of your plot")
-		return false
-	end
+	if not self:IsOnGround(pos, {self.owner.Character, self.plantsFolder}, 6 + Y_OFFSET) then
+        return false
+    end
 
 	-- nearbyRange is the radius of the space that the plant will take
 	-- We name it scan range because in the utils it's the thing checking
@@ -387,6 +403,17 @@ function Plot:CanPlacePlant(plr:Player, plantName: string, pos: Vector3): boolea
 		-- but if an exploiter fires it anyway they won't get past
 		return false
 	end
+
+	-- Check if the position of the click is inside one of the plows
+	if self:IsInside(plow, pos) or self:IsInside(plow2, pos) then
+		return true
+	else
+		-- If planted somewhere else then notify them
+		NotifEvent:FireClient(self.owner, "Can't place plants because it needs to be planted on the soil of your plot")
+		return false
+	end
+
+	
 end
 
 function Plot:PlacePlant(plantName: string, plant_cframe: CFrame, growth: number?)
