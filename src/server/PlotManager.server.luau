@@ -24,7 +24,12 @@ local PlotInstances: {typeof(PlotClass)} = {}
 local PlayerPlots = {} -- Track which plot each player owns
 
 local function getPlayerPlotData(plr)
+    if not PlayerPlots[plr] then return end
     local plotData = {
+        Plot = {
+            Plow = PlayerPlots[plr].plot.Plow,
+            Plow2 = PlayerPlots[plr].plot.Plow2,
+        },
         Plants = {}
     }
 

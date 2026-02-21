@@ -54,6 +54,8 @@ function ConsumablesHandler:GivePlayerConsumable(plr: Player, toolName: string, 
 
     how_many = how_many or 1
 
+    print(toolName, "FROM GIVEPLAYER CONSUMABLE")
+
     if plrTable[toolName] then
         plrTable[toolName]:AddUses(how_many)
     else

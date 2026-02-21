@@ -21,6 +21,20 @@ local camera: Camera = workspace.CurrentCamera
 
 local SeedConsumables = {}
 
+local function IsInside(part: BasePart, pos: Vector3)
+	-- We treat the part's center as (0,0,0)
+	local relativePos: Vector3 = part.CFrame:PointToObjectSpace(pos)
+	-- We use half because the part extends equally in both directions from its center
+	local halfSize: Vector3 = part.Size * 0.5
+
+	-- Check if the position is inside the part's X and Z axis
+	-- math.abs makes sure we check both positive and negative directions
+	local insideX: boolean = math.abs(relativePos.X) <= halfSize.X
+	local insideZ: boolean = math.abs(relativePos.Z) <= halfSize.Z
+
+	return insideX and insideZ -- Return the result (True if inside and false if not)
+end
+
 local function setModelTransparency(model: Model, transparency: number)
     for _, part in pairs(model:GetChildren()) do
         if part:IsA("BasePart") then
@@ -78,7 +92,19 @@ function SeedConsumables:CanPlacePlant(plantName: string) : boolean
     if not scanRange then return false end
 
     local plot = PlotCacheClientService:GetPlotData()
-    if not plot then return false end
+    if not plot or not plot.Plot then return false end
+
+    print(plot)
+
+    local plow: BasePart = plot.Plot.Plow
+	local plow2: BasePart = plot.Plot.Plow2
+
+    print(plow, " ", plow2)
+
+	-- Check if the position of the click is inside one of the plows
+	if not (IsInside(plow, self.mousePos) or IsInside(plow2, self.mousePos)) then
+		return false
+    end
 
     local plants = plot.Plants
 	if PlotUtils:ArePlantsNearby(plants, self.mousePos, scanRange) then
