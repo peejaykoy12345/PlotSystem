@@ -5,13 +5,17 @@ local UserInputService = game:GetService("UserInputService")
 
 local remotes = require(ReplicatedStorage.Packages.remotes)
 local GetPlotFunction: RemoteFunction = remotes:getFunctionAsync("GetPlot")
+local UseConsumableEvent: RemoteEvent = remotes:getEventAsync("UseConsumable")
 
 local PlantModels = ReplicatedStorage.PlantModels
 
 local PlantsData = require(ReplicatedStorage.Shared.PlantsData)
 local PlotUtils = require(ReplicatedStorage.Shared.PlotUtils)
 
+local ConsumablesUtils = require(script.Parent.ConsumablesUtils)
+
 local plr = Players.LocalPlayer
+local mouse = plr:GetMouse()
 local camera: Camera = workspace.CurrentCamera
 
 local SeedConsumables = {}
@@ -22,6 +26,37 @@ local function setModelTransparency(model: Model, transparency: number)
             part.Transparency = transparency
         end
     end
+end
+
+local equip_debounce = false
+local toolUseDebounce = false
+
+function SeedConsumables:SetupTool(tool: Tool)
+    tool.Activated:Connect(function()
+        if toolUseDebounce then return end
+        if not SeedConsumables:CanPlacePlant(ConsumablesUtils:GetPlantName(tool.Name)) then return end
+        toolUseDebounce = true
+        task.delay(0.4, function()
+            toolUseDebounce = false
+        end)
+
+        local position = mouse.Hit.Position
+        local cleanName = tool.Name:gsub("%s*%b[]$", "")
+        UseConsumableEvent:FireServer(cleanName, position)
+    end)
+
+    tool.Equipped:Connect(function()
+        if equip_debounce then return end
+        equip_debounce = true
+        task.delay(0.7, function()
+            equip_debounce = false
+        end)
+        SeedConsumables:OnEquip(ConsumablesUtils:GetPlantName(tool.Name))
+    end)
+    
+    tool.Unequipped:Connect(function()
+        SeedConsumables:OnUnequip()
+    end)
 end
 
 function SeedConsumables:CanPlacePlant(plantName: string) : boolean
@@ -83,13 +118,7 @@ function SeedConsumables:OnEquip(plantName: string)
         local result = workspace:Raycast(ray.Origin, ray.Direction * 500, rayParams)
         if not result then return end
 
-        print(Y_OFFSET , " is offset")
-
         self.mousePos = (CFrame.new(result.Position) * Y_OFFSET).Position
-        --self.mousePos = self.mousePos.Position
-
-        print(self.mousePos, "|", result.Position)
-        
         model:PivotTo(CFrame.new(self.mousePos))
     end)
 end
