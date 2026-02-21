@@ -33,7 +33,7 @@ local function PlayerAdded(player: Player)
 
         if player.Parent == Players then
             Profiles[player] = profile
-            print(`Profile loaded for {player.DisplayName}!`)
+            print(`Profile loaded for {player.DisplayName}! coming from Consumables`)
 
             ConsumablesHandler:LoadPlayerConsumables(player, profile.Data.Consumables)
         else

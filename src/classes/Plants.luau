@@ -36,8 +36,6 @@ function Plants.new(data: PlantData)
     self.Harvest = data.Harvest
     self.NearbyRange = data.nearbyRange
 
-    self.CFrame = self.Model:GetPivot()
-
     self.PrimaryPart = self.Model.PrimaryPart
 
     self.Growth = data.Growth or 0  
@@ -45,6 +43,8 @@ function Plants.new(data: PlantData)
     self.Model:PivotTo(data.PlantCFrame * data.Offset)
     self.Model.Parent = self.Plot.plot.Plants
     self.Model:SetAttribute("PlantModel", true)
+
+    self.CFrame = self.Model:GetPivot()
 
     self.GrowFunc = data.GrowFunc
     self.LoadGrowthFunc = data.LoadGrowthFunc

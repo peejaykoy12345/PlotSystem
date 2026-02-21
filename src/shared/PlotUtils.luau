@@ -10,7 +10,6 @@ function module:ArePlantsNearby(plants, pos: Vector3, scanRange: number)
 			return true
 		end
 	end
-
 	return false
 end
 

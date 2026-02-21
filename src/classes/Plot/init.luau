@@ -70,6 +70,8 @@ function Plot.new(params)
 	-- If triggered the server handler will unference the plot owner
 	self.OnUnclaim = Instance.new("BindableEvent")
 
+	self.OnChanged = Instance.new("BindableEvent")
+
 	self:ConnectProximityPrompt() -- Connect the clickdetector event
 
 	return self
@@ -309,6 +311,7 @@ function Plot:LoadPlantData()
 			print(plant, " loaded")
 		end
 	end
+	self.OnChanged:Fire()
 end
 
 function Plot:LoadData()
@@ -409,6 +412,9 @@ function Plot:PlacePlant(plantName: string, plant_cframe: CFrame, growth: number
 	-- There wont be a growth parameter if this was called as a remote handler for PlacePlants event
 	if growth then
 		plantData.Offset = CFrame.new(0,0,0)
+	else
+		-- Fire if not from LoadPlantsData
+		self.OnChanged:Fire()
 	end
 
 	local plant = PlantsClass.new(plantData)
@@ -466,6 +472,8 @@ function Plot:DestroyPlant(plant)
 		warn("PLANT DOESNT EXIST") -- If it isn't in self.plants
 		return 
 	end
+
+	self.OnChanged:Fire()
 
 	self.plants[plantIndex]:Destroy() -- Call destroy method on class 
 	table.remove(self.plants, plantIndex) -- Remove from the table
