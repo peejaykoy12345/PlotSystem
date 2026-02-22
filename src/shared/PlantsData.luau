@@ -28,8 +28,6 @@ return {
         nearbyRange = 3,
         GrowFunc = function(params: GrowFuncParams)
             local plant = params.Plant
-            print(plant.Model:GetFullName(), " ", plant.MaxGrowth, " ", plant.Growth)
-
             local brick: BasePart = plant.Model.Bamboo
             
             local growthAmount: number = plant.GrowthRate * plant.Plot.tier

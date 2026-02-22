@@ -37,9 +37,6 @@ function module:IsOnGround(pos: Vector3, ignoreList: {Instance}?, rayLength: num
 
     local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
 
-    if rayResult then
-        print(rayResult.Instance.Name, " ", rayResult.Instance.ClassName)
-    end
     return rayResult ~= nil and rayResult.Instance.Name ~= "DialogueFloatingPart"
 end
 
