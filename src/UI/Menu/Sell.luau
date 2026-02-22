@@ -23,12 +23,12 @@ function UI:Init()
         for itemName, qty in pairs(items) do
             local frame = ItemContainer:FindFirstChild(itemName)
             if frame then
-                frame.Quantity.Text = qty
+                frame.Quantity.Text = "Quantity: " .. tostring(qty)
             else
                 frame = ItemTemplate:Clone()
                 frame.Name = itemName
                 frame.ItemName.Text = itemName
-                frame.Quantity.Text = qty
+                frame.Quantity.Text = "Quantity: " .. tostring(qty)
                 frame.Visible = true
                 frame.Parent = ItemContainer
 

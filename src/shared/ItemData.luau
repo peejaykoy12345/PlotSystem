@@ -1,6 +1,5 @@
 local ServerStorage = game:GetService("ServerStorage")
 
-
 local ItemData = {
     ["Bamboo"] = {
         SellPrice = 100,

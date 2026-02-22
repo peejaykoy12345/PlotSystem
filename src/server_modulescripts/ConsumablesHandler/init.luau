@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotes = require(ReplicatedStorage.Packages.remotes)
 local UseConsumableEvent: RemoteEvent = remotes:getEventAsync("UseConsumable")
 local ConsumableAddedEvent: RemoteEvent = remotes:getEventAsync("ConsumableAdded")
+local GetConsumablesFunction: RemoteFunction = remotes:getFunctionAsync("GetConsumables")
 
 local ConsumablesFolder = ReplicatedStorage.Consumables
 
@@ -32,6 +33,10 @@ function ConsumablesHandler:InitializeRemoteEvents()
             plrTable[toolName] = nil
         end
     end)
+
+    GetConsumablesFunction.OnServerInvoke = function(plr)
+        return PlayerConsumables[plr]
+    end
 end
 
 function ConsumablesHandler:LoadPlayerConsumables(plr: Player, saveData: {ConsumablesDataStore})

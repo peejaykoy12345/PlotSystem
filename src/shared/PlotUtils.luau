@@ -37,6 +37,12 @@ function module:IsOnGround(pos: Vector3, ignoreList: {Instance}?, rayLength: num
 
     local rayResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
 
+	if rayResult then
+		print(rayResult.Instance.Name)
+		print(rayResult.Instance.Transparency)
+		print(ignoreList)
+	end
+
     return rayResult ~= nil and rayResult.Instance.Name ~= "DialogueFloatingPart"
 end
 
@@ -80,7 +86,7 @@ function module:CanPlacePlant(plr: Player, plot, plantName: string, pos: Vector3
 	local plow: BasePart = plot.plot.Plow
 	local plow2: BasePart = plot.plot.Plow2	
 
-	if not self:IsOnGround(pos, params.IsOnGroundExcludeDescendans, 6 + Y_OFFSET) then
+	if not self:IsOnGround(pos, params.IsOnGroundExcludeDescendants, 6 + Y_OFFSET) then
         return false
     end
 

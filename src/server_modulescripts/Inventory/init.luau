@@ -2,9 +2,18 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local remotes = require(ReplicatedStorage.Packages.remotes)
 local UpdateInventoryEvent: RemoteEvent = remotes:getEventAsync("UpdateInventory")
+local GetInventoryDataFunction: RemoteFunction = remotes:getFunctionAsync("GetInventoryData")
 
 local module = {}
 local inventories = {}
+
+function module:Init()
+	GetInventoryDataFunction.OnServerInvoke = function(plr)
+		print(plr.Name .. " wants inventory")
+		print(inventories[plr.UserId])
+		return inventories[plr.UserId]
+	end
+end
 
 function module:Add(plr: Player, item: string, amount)
 	if not inventories[plr.UserId] then

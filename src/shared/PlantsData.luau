@@ -24,7 +24,7 @@ return {
         GrowthRate = 1,
         MaxGrowth = 20,
         Harvest = 1,
-        Offset = CFrame.new(0, 1, 0),
+        Offset = CFrame.new(0, 0, 0),
         nearbyRange = 3,
         GrowFunc = function(params: GrowFuncParams)
             local plant = params.Plant

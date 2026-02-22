@@ -13,10 +13,16 @@ function module:Init()
     local dialogue = SimpleDialogue.new(npc)
 
     local dialogueTree = SimpleDialogue.CreateTree({
-        SimpleDialogue.CreateNode("Would you like to sell items?", {
-            SimpleDialogue.CreateOption("Yes of course!", function()
+        SimpleDialogue.CreateNode("What do you want to do?", {
+            SimpleDialogue.CreateOption("Sell", function()
                 local SellScreenGUI = plr.PlayerGui:WaitForChild("GUI"):WaitForChild("SellGui")
                 local MainFrame = SellScreenGUI.Frame
+
+                MainFrame.Visible = true
+            end),
+            SimpleDialogue.CreateOption("Buy", function()
+                local ShopScreenGUI = plr.PlayerGui:WaitForChild("GUI"):WaitForChild("ShopGui")
+                local MainFrame = ShopScreenGUI.Frame
 
                 MainFrame.Visible = true
             end)
