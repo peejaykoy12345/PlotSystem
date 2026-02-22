@@ -25,16 +25,16 @@ local PlayerPlots = {} -- Track which plot each player owns
 local function getPlayerPlotData(plr)
     if not PlayerPlots[plr] then return end
     local plotData = {
-        Plot = {
+        plot = {
             Plow = PlayerPlots[plr].plot.Plow,
             Plow2 = PlayerPlots[plr].plot.Plow2,
-            PlantsFolder = PlayerPlots[plr].plantsFolder
+            PlantsFolder = PlayerPlots[plr].plantsFolder,
         },
-        Plants = {}
+        plants = {}
     }
 
     for _, plant in ipairs(PlayerPlots[plr].plants) do
-        table.insert(plotData.Plants, {
+        table.insert(plotData.plants, {
            Model = plant.Model, 
            CFrame = plant.CFrame, 
            nearbyRange = plant.nearbyRange

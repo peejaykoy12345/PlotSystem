@@ -107,38 +107,10 @@ end
 function SeedConsumables:CanPlacePlant(plantName: string) : boolean
     if not self.previewModel or not self.mousePos then return end
 
-    local plantData = PlantsData[plantName]
-    if not plantData then 
-        warn(`{plantName} does not exist in PlantsData`) -- Fallback just in case we mispell when adding new plants
-        return false
-    end
-
-    local Y_OFFSET = plantData.Offset.Position.Y
-
-    local scanRange = getPlantScanRadius(plantName)
-    if not scanRange then return false end
-
     local plot = CacheClientService:GetCacheData("plotData")
-    if not plot or not plot.Plot then return false end
+    if not plot or not plot.plot then return false end
 
-    local plow: BasePart = plot.Plot.Plow
-	local plow2: BasePart = plot.Plot.Plow2
-
-	-- Check if the position of the click is inside one of the plows
-	if not (IsInside(plow, self.mousePos) or IsInside(plow2, self.mousePos)) then
-		return false
-    end
-
-    local plants = plot.Plants
-	if PlotUtils:ArePlantsNearby(plants, self.mousePos, scanRange) then
-		return false
-	end
-
-    if not IsOnGround(self.mousePos, {plr.Character, self.previewModel, plot.Plot.PlantsFolder}, 6 + Y_OFFSET) then
-        return false
-    end
-
-    return true
+    return PlotUtils:CanPlacePlant(plr, plot, plantName, self.mousePos, {IsOnGroundExcludeDescendants = {plr.Character, plot.plantsFolder, self.previewModel}})
 end
 
 function SeedConsumables:OnEquip(plantName: string)
